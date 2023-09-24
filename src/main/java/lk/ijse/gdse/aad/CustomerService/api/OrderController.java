@@ -56,7 +56,7 @@ public class OrderController {
 //        return orderService.getFullProfileData(initialCustomer);
 
         //Method -2 - with WebClient(modern)
-        WebClient webClient = WebClient.create(customerDataEndpoint + "/" + customerId);
+        WebClient webClient = WebClient.create(customerDataEndpoint + customerId);
         Mono<CustomerOrder> responseCustomer  = webClient.get()
                 .retrieve() // fetch the data
                 .bodyToMono(CustomerOrder.class);
