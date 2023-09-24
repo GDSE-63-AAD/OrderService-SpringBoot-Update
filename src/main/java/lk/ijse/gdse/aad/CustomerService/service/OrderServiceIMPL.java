@@ -26,20 +26,20 @@ public class OrderServiceIMPL implements OrderService {
 
 
     @Override
-    public OrderDTO saveCustomer(OrderDTO customer) {
+    public OrderDTO saveOrder(OrderDTO customer) {
         customer.setOrderId(UUID.randomUUID().toString());
         return dataTypeConversion.getCustomerDTO(orderDAO
                 .save(dataTypeConversion.getCustomerEntity(customer)));
     }
 
     @Override
-    public OrderDTO getSelectedCustomer(String code) {
+    public OrderDTO getSelectedOrder(String code) {
         if(!orderDAO.existsById(code)) throw new InvalidException("Order not found");
         return dataTypeConversion.getCustomerDTO((orderDAO.getOrderByOrderId(code)));
     }
 
     @Override
-    public void updateCustomer(OrderDTO order) {
+    public void updateOrder(OrderDTO order) {
         Optional<Order> tmpOrder = orderDAO.findById(order.getOrderId());
         if (!tmpOrder.isPresent()) throw new RuntimeException("Order Not found");
         tmpOrder.get().setOrderValue(order.getOrderValue());
@@ -47,11 +47,18 @@ public class OrderServiceIMPL implements OrderService {
     }
 
     @Override
-    public void deleteCustomer(String code) {
+    public void deleteOrder(String code) {
         if(!orderDAO.existsById(code)) throw new NotFoundException("Invalid Order");
          orderDAO.deleteByOrderId(code);
     }
-    public CustomerOrder getMultipleData(@RequestBody CustomerOrder){
 
+    @Override
+    public CustomerOrder getFullProfileData(CustomerOrder modifiedCustomer) {
+        Order orderData = orderDAO.findByCustomerId(modifiedCustomer.getCustomerCode());
+        // custom customer obj
+        modifiedCustomer.setOrderId(orderData.getOrderId());
+        modifiedCustomer.setOrderValue(orderData.getOrderValue());
+        return modifiedCustomer;
     }
+
 }

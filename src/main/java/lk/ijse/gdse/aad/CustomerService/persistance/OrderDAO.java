@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface OrderDAO extends CrudRepository<Order,String> {
     Order save(Order order);
     Order getOrderByOrderId(String code);
-//    Customer getSelectedOrder(String code, String orderId);
     void deleteByOrderId(String code);
+    Order findByCustomerId(String customerId);
 }
