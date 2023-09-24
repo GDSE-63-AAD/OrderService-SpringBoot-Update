@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/v1/order")
@@ -48,9 +50,21 @@ public class OrderController {
     }
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     CustomerOrder getFullProfile(@RequestParam String customerId){
-        RestTemplate restTemplate = new RestTemplate();
-        CustomerOrder initialCustomer = restTemplate.getForObject(customerDataEndpoint + customerId, CustomerOrder.class);
-        return orderService.getFullProfileData(initialCustomer);
+        //Method -1 - with RestTemplate(legacy)
+//        RestTemplate restTemplate = new RestTemplate();
+//        CustomerOrder initialCustomer = restTemplate.getForObject(customerDataEndpoint + customerId, CustomerOrder.class);
+//        return orderService.getFullProfileData(initialCustomer);
+
+        //Method -2 - with WebClient(modern)
+        WebClient webClient = WebClient.create(customerDataEndpoint + "/" + customerId);
+        Mono<CustomerOrder> responseCustomer  = webClient.get()
+                .retrieve() // fetch the data
+                .bodyToMono(CustomerOrder.class);
+                 return orderService.getFullProfileData(responseCustomer.block());
+
+
+
+
     }
 
 }
